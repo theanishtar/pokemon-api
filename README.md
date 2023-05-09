@@ -1,6 +1,8 @@
 ## REST API với AngularJS
 
 ### Cấu hình đơn giản
+
+#### HTML:
 ```html
 <body ng-app="myapp">
 	<div ng-controller="myctrl">
@@ -9,6 +11,7 @@
 </body>
 ```
 
+#### JAVASCRIPT:
 ```js
 var app = angular.module("myapp", []).controller("myctrl", function ($scope, $http) {
 	$scope.list = [];
