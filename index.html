@@ -2,95 +2,83 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- <script src="js/jquery.min.js"></script> -->
-	<script src="js/angular.min.js"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-	<title>REST API with </title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API with Pokemons</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 
 <body ng-app="myapp" style="background-color: #212529;">
-	<div class="app" ng-controller="myctrl">
-		<table ng-show="showList" style="width: 70%; justify-content: center; margin: 0 auto;"
-			class="table table-dark table-border">
-			<thead>
-				<tr>
-					<th scope="col">Index</th>
-					<th scope="col">Name</th>
-					<th scope="col">Infor</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="x in list">
-					<td>{{$index+1}}</td>
-					<td>{{x.name}}</td>
-					<td><a href="" ng-click="more(x.name)">Details</a></td>
-				</tr>
-			</tbody>
-		</table>
+    <div class="app" ng-controller="myctrl">
+        <table ng-show="showList" style="width: 70%; justify-content: center; margin: 0 auto;"
+            class="table table-dark table-border">
+            <thead>
+                <tr>
+                    <th scope="col">Index</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="x in list">
+                    <td>{{$index+1}}</td>
+                    <td>{{x.name}}</td>
+                    <td><a href="" ng-click="more(x.name)">Details</a></td>
+                </tr>
+            </tbody>
+        </table>
 
-		<div class="details" ng-hide="showList" style="width: 70%; justify-content: center; margin: 0 auto;">
-			<h2>See details</h2>
-			<div class="card" style="width: 300px;">
-				<img class="card-img-top" src="{{pokemon_image}}" alt="" style="width:100%">
-				<div class="card-body">
-					<h4 class="card-title"><strong>Name:</strong> {{pokemon_name}}</h4>
-					<p class="card-text"><strong>Height:</strong> {{pokemon_height}} inch</p>
-					<a href="#" class="btn btn-primary" ng-click="getList()">List</a>
-				</div>
-			</div>
-			<br>
-		</div>
+        <div class="details" ng-hide="showList" style="width: 70%; justify-content: center; margin: 0 auto;">
+            <h2>See details</h2>
+            <div class="card" style="width: 300px;">
+                <img class="card-img-top" ng-src="{{pokemon_image}}" alt="" style="width:100%">
+                <div class="card-body">
+                    <h4 class="card-title"><strong>Name:</strong> {{pokemon_name}}</h4>
+                    <p class="card-text"><strong>Height:</strong> {{pokemon_height}} inch</p>
+                    <a href="#" class="btn btn-primary" ng-click="getList()">List</a>
+                </div>
+            </div>
+            <br>
+        </div>
 
-	</div>
+    </div>
 
+    <script src="js/angular.min.js"></script>
+    <script>
+        var app = angular.module("myapp", []).controller("myctrl", function ($scope, $http) {
+            $scope.list = [];
+            $scope.showList = true;
 
-	</div>
+            $http({
+                method: 'GET',
+                url: 'https://pokeapi.co/api/v2/pokemon'
+            }).then(function successCallback(response) {
+                $scope.list = response.data.results;
+            }, function errorCallback(response) {
+                console.log("ERROR")
+            });
 
-	<script>
+            $scope.getList = function () {
+                $scope.showList = true;
+            };
 
-		var app = angular.module("myapp", []).controller("myctrl", function ($scope, $http) {
-			$scope.list = [];
-			$scope.showList = true;
-
-			// Simple GET request example:
-			let a = $http({
-				method: 'GET',
-				url: 'https://pokeapi.co/api/v2/pokemon'
-			}).then(function successCallback(response) {
-				// this callback will be called asynchronously
-				// when the response is available
-				$scope.list = response.data.results;
-				console.log($scope.list)
-			}, function errorCallback(response) {
-				// called asynchronously if an error occurs
-				// or server returns response with an error status.
-				console.log("ERROR")
-			});
-			$scope.getList = function () {
-				$scope.showList = true;
-			}
-			$scope.more = function (name) {
-				$scope.showList = false;
-				$scope.pokemon_name = name;
-				$http({
-					method: 'GET',
-					url: 'https://pokeapi.co/api/v2/pokemon/' + name
-				}).then(function successCallback(response) {
-					//alert(response.data.sprites.back_default)
-					$scope.pokemon_height = response.data.height;
-					$scope.pokemon_image = response.data.sprites.other.home.front_default;
-				}, function errorCallback(response) {
-					alert("ERROR")
-				});
-			}
-		});
-
-
-	</script>
+            $scope.more = function (name) {
+                $scope.showList = false;
+                $scope.pokemon_name = name;
+                $http({
+                    method: 'GET',
+                    url: 'https://pokeapi.co/api/v2/pokemon/' + name
+                }).then(function successCallback(response) {
+                    $scope.pokemon_height = response.data.height;
+                    $scope.pokemon_image = response.data.sprites.other.home.front_default;
+                }, function errorCallback(response) {
+                    alert("ERROR")
+                });
+            };
+        });
+    </script>
 </body>
 
 </html>
